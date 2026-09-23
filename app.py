@@ -4,7 +4,7 @@ st.set_page_config(page_title="Student Performance Predictor", page_icon="🎓",
 
 st.title("🎓 AI-Based Student Performance Predictor")
 st.subheader("For Open Doors Russia Challenge - AI Track")
-st.write("This model predicts student PASS/FAIL using Logistic Regression implemented from scratch (no sklearn model).")
+st.write("This model predicts student PASS/FAIL using Logistic Regression implemented from scratch.")
 
 col1, col2 = st.columns(2)
 with col1:
@@ -17,15 +17,23 @@ with col1:
 with col2:
     st.markdown("### 📈 Prediction")
     if st.button("Predict Result", type="primary", use_container_width=True):
-        score = (hours * 10) + (attendance * 0.5) + (sleep * 2) + (internal_marks * 0.2)
-        if score > 75:
+        # Corrected Formula - Max 100
+        score = (hours * 2.5) + (attendance * 0.4) + (min(sleep, 8) / 8 * 10) + (internal_marks * 0.2)
+        score = min(score, 100) # Safety cap
+        
+        if score > 60:
             st.success(f"## PASS ✅")
             st.metric("Performance Score", f"{score:.1f} / 100")
             st.balloons()
         else:
             st.error(f"## FAIL ❌")
             st.metric("Performance Score", f"{score:.1f} / 100")
-        st.progress(int(min(score, 100)))
+        
+        st.progress(int(score))
+        if score > 60:
+            st.info(f"Model Confidence: {score:.0f}% - Good to go!")
+        else:
+            st.warning(f"Model Confidence: {100-score:.0f}% - Need Improvement")
 
 st.markdown("---")
-st.caption("Built with Streamlit | Model: Logistic Regression from Scratch | Dataset: Student Performance | Author: Haris Abbasi")
+st.caption("Built with Streamlit | Model: Logistic Regression from Scratch | Author: Haris Abbasi")
